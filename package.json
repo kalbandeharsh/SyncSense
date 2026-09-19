@@ -1,0 +1,28 @@
+{
+  "name": "syncsense-ai",
+  "version": "1.0.0",
+  "description": "Offline-First Agricultural Intelligence with Local Decision Preservation",
+  "main": "backend/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "test": "node test/test-engine.js",
+    "build": "echo 'Build complete'"
+  },
+  "keywords": [
+    "offline-first",
+    "agriculture",
+    "pwa",
+    "indexeddb",
+    "service-worker",
+    "ai-reconciliation"
+  ],
+  "author": "SyncSense Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

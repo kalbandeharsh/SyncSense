@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/health", "destination": "/api/index.js" },
+    { "source": "/sync", "destination": "/api/index.js" },
+    { "source": "/cases", "destination": "/api/index.js" },
+    { "source": "/cases/:id*", "destination": "/api/index.js" },
+    { "source": "/review", "destination": "/api/index.js" }
+  ]
+}

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="theme-color" content="#059669">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SyncSense AI">
+  <meta name="description" content="SyncSense AI - Offline-First Agricultural Decision Support for Rural Connectivity">
+  <title>SyncSense AI | Offline-First Agricultural Intelligence</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23059669'/><text x='50' y='68' font-size='56' text-anchor='middle'>🌱</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top Navigation Bar -->
+  <header class="navbar" id="app-header">
+    <div class="nav-container">
+      <div class="brand-group" id="brand-home-btn" role="button" tabindex="0">
+        <span class="brand-icon">🌱</span>
+        <div>
+          <h1 class="brand-title">SyncSense <span class="brand-ai">AI</span></h1>
+          <p class="brand-subtitle">Offline-First Agri Intelligence • Cotton</p>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <!-- Multilingual Switcher (English, Hindi, Marathi) -->
+        <div class="lang-switcher-wrap" id="lang-switcher-wrap" title="Change Language / भाषा बदलें">
+          <span class="lang-icon">🌐</span>
+          <div class="lang-toggle-group" id="lang-toggle-group">
+            <button type="button" class="lang-btn active" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="hi">हिंदी</button>
+            <button type="button" class="lang-btn" data-lang="mr">मराठी</button>
+          </div>
+        </div>
+
+        <!-- Live Connection & Server Status Badge -->
+        <div class="status-pill" id="network-status-badge">
+          <span class="status-dot online"></span>
+          <span class="status-label" id="network-status-text">Checking network...</span>
+        </div>
+
+        <!-- Reconnect / Manual Sync Button -->
+        <button class="btn btn-secondary btn-sm" id="btn-header-sync" title="Synchronize offline cases">
+          <span class="btn-icon">🔄</span> <span class="sync-btn-label" data-i18n="syncNow">Sync Now</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Main Application Container -->
+  <main class="main-content" id="app-main">
+
+    <!-- ============================================================ -->
+    <!-- SCREEN 1: DASHBOARD -->
+    <!-- ============================================================ -->
+    <section id="screen-dashboard" class="screen-view active">
+      <div class="view-header">
+        <div>
+          <h2>Agricultural Decision Center</h2>
+          <p class="section-desc">Reliable diagnostic screening for low-connectivity rural farms.</p>
+        </div>
+        <div class="quick-nav-actions">
+          <button class="btn btn-primary" id="btn-dash-new-case">
+            <span class="btn-icon">➕</span> New Observation
+          </button>
+          <button class="btn btn-outline" id="btn-dash-view-cases">
+            <span class="btn-icon">📋</span> View Cases (<span id="dash-btn-count">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Metrics Counter Grid -->
+      <div class="stats-grid">
+        <div class="stat-card" id="card-total-cases">
+          <div class="stat-icon-wrap icon-total">📁</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-total">0</span>
+            <span class="stat-label">Total Saved Cases</span>
+          </div>
+        </div>
+
+        <div class="stat-card" id="card-pending-cases">
+          <div class="stat-icon-wrap icon-pending">⏳</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-pending">0</span>
+            <span class="stat-label">Pending Cloud Sync</span>
+          </div>
+        </div>
+
+        <div class="stat-card" id="card-conflict-cases">
+          <div class="stat-icon-wrap icon-conflicts">⚠️</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-conflicts">0</span>
+            <span class="stat-label">Conflicts Preserved</span>
+          </div>
+        </div>
+
+        <div class="stat-card" id="card-synced-cases">
+          <div class="stat-icon-wrap icon-synced">✅</div>
+          <div class="stat-data">
+            <span class="stat-value" id="stat-synced">0</span>
+            <span class="stat-label">Fully Reconciled</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Innovation Highlight Banner -->
+      <div class="innovation-callout">
+        <div class="callout-icon">💡</div>
+        <div class="callout-text">
+          <strong>The SyncSense Edge:</strong> Unlike typical sync tools, SyncSense does not overwrite local human or rule-based assessments with cloud AI. It synchronizes intelligence while preserving local decision history and highlighting conflicts for human review.
+        </div>
+      </div>
+
+      <!-- Quick Demo Scenario Loader (Ideal for Hackathon Judges) -->
+      <div class="demo-scenarios-panel">
+        <div class="panel-header">
+          <h3>⚡ Quick Hackathon Demo Scenarios</h3>
+          <span class="panel-badge">1-Click Test Scenarios</span>
+        </div>
+        <p class="panel-sub">Pre-populate realistic cotton observations to test instant offline evaluation and reconciliation:</p>
+
+        <div class="demo-buttons-grid">
+          <button class="demo-btn" id="demo-scenario-1">
+            <span class="demo-btn-title">Scenario 1: Matching Consensus</span>
+            <span class="demo-btn-desc">Dry soil + Wilting → Water stress (Local & Cloud agree)</span>
+          </button>
+
+          <button class="demo-btn" id="demo-scenario-2">
+            <span class="demo-btn-title">Scenario 2: Conflict & Preservation</span>
+            <span class="demo-btn-desc">Foliar lesions with dry soil → Detects conflict & preserves local</span>
+          </button>
+
+          <button class="demo-btn" id="demo-scenario-3">
+            <span class="demo-btn-title">Scenario 3: Insufficient Evidence</span>
+            <span class="demo-btn-desc">Incomplete markers → Triggers fallback & cloud insight</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Offline Architecture Info Card -->
+      <div class="info-card">
+        <h3>🛡️ Offline Capabilities Active</h3>
+        <ul class="info-checklist">
+          <li><strong>Local Rule Engine:</strong> Pure client-side JavaScript execution (Zero network dependency)</li>
+          <li><strong>IndexedDB Persistence:</strong> Complete local storage of cases and decision audits</li>
+          <li><strong>Service Worker Cache:</strong> Application loads instantly even in airplane mode</li>
+          <li><strong>Idempotent Sync:</strong> Deduplication and conflict preservation upon reconnection</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN 2: OBSERVATION FORM -->
+    <!-- ============================================================ -->
+    <section id="screen-form" class="screen-view">
+      <div class="view-header">
+        <div>
+          <button class="btn-link" id="btn-form-back-dash">← Back to Dashboard</button>
+          <h2>Field Observation Entry</h2>
+          <p class="section-desc">Record crop conditions. This form works completely offline without internet.</p>
+        </div>
+        <span class="badge badge-offline-ready">⚡ 100% Offline Ready</span>
+      </div>
+
+      <div class="form-container">
+        <form id="observation-form" novalidate>
+          <div class="form-grid">
+
+            <!-- Crop Selection -->
+            <div class="form-group">
+              <label for="input-crop" class="form-label">Crop Name</label>
+              <select id="input-crop" class="form-control" required>
+                <option value="Cotton" selected>🌱 Cotton (कपास / कापूस)</option>
+                <option value="Soybean">🌿 Soybean (सोयाबीन)</option>
+                <option value="Wheat">🌾 Wheat (गेहूं / गहू)</option>
+                <option value="Rice">🌾 Rice / Paddy (धान / भात)</option>
+                <option value="Maize">🌽 Maize / Corn (मक्का / मका)</option>
+              </select>
+              <span class="field-hint" data-i18n="cropHint">Supports Cotton, Soybean, Wheat, Rice, and Maize diagnostic models.</span>
+            </div>
+
+            <!-- Soil Condition -->
+            <div class="form-group">
+              <label for="input-soil" class="form-label">Soil Condition</label>
+              <select id="input-soil" class="form-control" required>
+                <option value="">-- Select Soil Condition --</option>
+                <option value="dry">Dry / Parched (Moisture deficit)</option>
+                <option value="cracked">Deeply Cracked (Severe drought)</option>
+                <option value="moist">Moist / Adequate moisture</option>
+                <option value="wet">Wet / Saturated</option>
+                <option value="waterlogged">Waterlogged / Standing water</option>
+              </select>
+            </div>
+
+            <!-- Leaf Color -->
+            <div class="form-group">
+              <label for="input-leaf-color" class="form-label">Canopy Leaf Color</label>
+              <select id="input-leaf-color" class="form-control" required>
+                <option value="">-- Select Leaf Color --</option>
+                <option value="green">Healthy Green</option>
+                <option value="dark_green">Dark Green</option>
+                <option value="yellow">Yellowing / Pale Chlorotic</option>
+                <option value="pale_green">Pale Green</option>
+                <option value="reddish_purple">Reddish / Purple</option>
+                <option value="brown">Brown / Scorched</option>
+              </select>
+            </div>
+
+            <!-- Leaf Spots -->
+            <div class="form-group">
+              <label for="input-leaf-spots" class="form-label">Leaf Spots or Lesions</label>
+              <select id="input-leaf-spots" class="form-control" required>
+                <option value="no">No Visible Spots</option>
+                <option value="brown_circular">Brown Circular Spots (Concentric rings)</option>
+                <option value="water_soaked">Water-soaked Dark Lesions</option>
+                <option value="yes">General Spots / Necrotic Patches</option>
+              </select>
+            </div>
+
+            <!-- Plant Condition -->
+            <div class="form-group">
+              <label for="input-plant-condition" class="form-label">General Plant Condition</label>
+              <select id="input-plant-condition" class="form-control" required>
+                <option value="">-- Select Plant Condition --</option>
+                <option value="healthy">Healthy & Upright</option>
+                <option value="wilting">Wilting / Drooping foliage</option>
+                <option value="stunted">Stunted / Retarded Growth</option>
+                <option value="shedding_squares">Shedding Squares / Bolls</option>
+              </select>
+            </div>
+
+            <!-- Additional Notes -->
+            <div class="form-group full-width">
+              <label for="input-notes" class="form-label">Additional Observations & Field Notes</label>
+              <textarea id="input-notes" class="form-control" rows="3" placeholder="e.g., Symptoms appeared 3 days after unseasonal heat. Lower third of canopy most affected."></textarea>
+            </div>
+          </div>
+
+          <!-- Form Action Buttons -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline" id="btn-clear-form">Clear Form</button>
+            <button type="submit" class="btn btn-primary btn-lg" id="btn-run-assessment">
+              <span class="btn-icon">⚡</span> Run Local Assessment
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN 3: LOCAL ASSESSMENT RESULT -->
+    <!-- ============================================================ -->
+    <section id="screen-assessment" class="screen-view">
+      <div class="view-header">
+        <div>
+          <button class="btn-link" id="btn-assess-back-form">← Back to Form</button>
+          <h2>Preliminary Local Assessment</h2>
+          <p class="section-desc">Evaluated instantly on-device using local rule engine v<span id="res-rule-version">1.0.0</span></p>
+        </div>
+        <div class="assessment-status-badge">
+          <span class="badge badge-local">Local Rule Engine</span>
+        </div>
+      </div>
+
+      <!-- Assessment Card -->
+      <div class="assessment-card" id="assessment-result-card">
+        <div class="assessment-header">
+          <div class="assessment-title-group">
+            <span class="assessment-label">Preliminary Finding</span>
+            <h3 class="assessment-heading" id="res-assessment-text">Analyzing...</h3>
+          </div>
+          <span class="badge" id="res-status-badge">Preliminary</span>
+        </div>
+
+        <div class="assessment-body">
+          <!-- Explanation -->
+          <div class="assessment-section">
+            <h4 class="section-subtitle">Explanation & Agronomic Reasoning</h4>
+            <p id="res-explanation-text" class="assessment-explanation">Reasoning will appear here.</p>
+          </div>
+
+          <!-- Evidence & Rules Grid -->
+          <div class="assessment-meta-grid">
+            <div class="meta-box">
+              <h4 class="meta-title">Matched Rules</h4>
+              <div id="res-matched-rules" class="tags-container"></div>
+            </div>
+
+            <div class="meta-box">
+              <h4 class="meta-title">Observations Considered (Evidence)</h4>
+              <ul id="res-evidence-list" class="evidence-list"></ul>
+            </div>
+          </div>
+
+          <!-- Immediate Field Recommendation -->
+          <div class="recommendation-box" id="res-rec-box">
+            <h4>Suggested Field Action (Heuristic)</h4>
+            <p id="res-recommendation-text">Action advice...</p>
+          </div>
+
+          <!-- Mandatory Safety Disclaimer -->
+          <div class="disclaimer-callout">
+            <span class="disclaimer-icon">⚠️</span>
+            <div class="disclaimer-text">
+              <strong>Safety Notice:</strong> <span id="res-disclaimer-text">This is a preliminary rule-based assessment. Consult a qualified agricultural expert before taking action.</span>
+            </div>
+          </div>
+
+          <!-- Meta Footer -->
+          <div class="assessment-meta-footer">
+            <span><strong>Generated:</strong> <span id="res-timestamp">Just now</span></span>
+            <span><strong>Rule Engine:</strong> v<span id="res-footer-version">1.0.0</span></span>
+            <span><strong>Sync Queue:</strong> <span class="badge badge-pending">Pending Reconnection</span></span>
+          </div>
+        </div>
+
+        <!-- Card Footer Actions -->
+        <div class="assessment-footer-actions">
+          <button class="btn btn-outline" id="btn-assess-new" data-i18n="btnNewObservationAssess">New Observation</button>
+          <button type="button" class="btn btn-secondary" id="btn-assess-tts" title="Listen to assessment aloud via Google TTS">
+            <span class="btn-icon" id="tts-icon">🔊</span> <span id="tts-label" data-i18n="btnListenVoice">🔊 Listen (Voice Guide)</span>
+          </button>
+          <button class="btn btn-primary btn-lg" id="btn-save-case">
+            <span class="btn-icon">💾</span> <span data-i18n="btnSaveCase">Save to Local Cases</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN 4: CASES DASHBOARD -->
+    <!-- ============================================================ -->
+    <section id="screen-cases" class="screen-view">
+      <div class="view-header">
+        <div>
+          <button class="btn-link" id="btn-cases-back-dash">← Back to Dashboard</button>
+          <h2>Saved Cases Explorer</h2>
+          <p class="section-desc">Locally preserved farm records with synchronized cloud audit history.</p>
+        </div>
+        <div class="cases-header-actions">
+          <button class="btn btn-primary btn-sm" id="btn-cases-new">
+            <span class="btn-icon">➕</span> New Case
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btn-cases-sync">
+            <span class="btn-icon">🔄</span> Sync Pending
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-filter="all">All Cases (<span id="filter-count-all">0</span>)</button>
+        <button class="tab-btn" data-filter="pending">Pending Sync (<span id="filter-count-pending">0</span>)</button>
+        <button class="tab-btn" data-filter="synced">Synced & Reconciled (<span id="filter-count-synced">0</span>)</button>
+        <button class="tab-btn" data-filter="conflicts">Conflicts (<span id="filter-count-conflicts">0</span>)</button>
+      </div>
+
+      <!-- Cases List / Grid -->
+      <div id="cases-container" class="cases-grid">
+        <!-- Dynamically injected case cards -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="cases-empty-state" class="empty-state hidden">
+        <div class="empty-icon">🌾</div>
+        <h3>No saved cases found</h3>
+        <p>Record your first cotton field observation to test local evaluation and synchronization.</p>
+        <button class="btn btn-primary" id="btn-empty-new-case">Create New Case</button>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SCREEN 5: RECONCILIATION VIEW -->
+    <!-- ============================================================ -->
+    <section id="screen-reconciliation" class="screen-view">
+      <div class="view-header">
+        <div>
+          <button class="btn-link" id="btn-recon-back-cases">← Back to Cases Explorer</button>
+          <h2>Intelligence Reconciliation</h2>
+          <p class="section-desc">Comparing offline local rule heuristics with cloud agricultural AI reasoning.</p>
+        </div>
+        <div id="recon-case-badge-wrap" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-recon-tts" title="Listen to reconciliation comparison via voice">
+            <span class="btn-icon" id="recon-tts-icon">🔊</span> <span id="recon-tts-label">Voice Guide</span>
+          </button>
+          <span class="badge" id="recon-case-id-badge">CASE-ID</span>
+        </div>
+      </div>
+
+      <!-- Reconciliation Status Banner -->
+      <div id="recon-status-banner" class="recon-status-banner banner-match">
+        <div class="banner-icon" id="recon-banner-icon">✅</div>
+        <div class="banner-content">
+          <h3 id="recon-banner-title">Match / Confirmed</h3>
+          <p id="recon-banner-desc">Local and cloud assessments are fully consistent.</p>
+          <div id="recon-conflict-alert" class="conflict-alert-box hidden">
+            <strong>Critical Conflict Notice:</strong> Conflict detected. The original local decision has been preserved. Additional review is required.
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-Side Comparison Grid -->
+      <div class="comparison-grid">
+
+        <!-- Left Box: Local Decision -->
+        <div class="decision-card card-local">
+          <div class="decision-header">
+            <div class="decision-header-left">
+              <span class="decision-source-tag tag-local">Local Rule Engine</span>
+              <h3 class="decision-title">Local Decision</h3>
+            </div>
+            <span class="badge badge-preserved">Preserved</span>
+          </div>
+
+          <div class="decision-body">
+            <div class="decision-field">
+              <span class="field-label">Assessment</span>
+              <div class="field-value highlight" id="recon-local-assessment">Loading...</div>
+            </div>
+
+            <div class="decision-field">
+              <span class="field-label">Matched Rules</span>
+              <div id="recon-local-rules" class="tags-container"></div>
+            </div>
+
+            <div class="decision-field">
+              <span class="field-label">Evidence Considered</span>
+              <ul id="recon-local-evidence" class="evidence-list-small"></ul>
+            </div>
+
+            <div class="decision-field">
+              <span class="field-label">Full Reasoning</span>
+              <p class="reasoning-text" id="recon-local-explanation">Loading...</p>
+            </div>
+
+            <div class="decision-footer-meta">
+              <span><strong>Rule Version:</strong> <span id="recon-local-version">v1.0.0</span></span>
+              <span><strong>Evaluated:</strong> <span id="recon-local-timestamp">-</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Box: Cloud Decision -->
+        <div class="decision-card card-cloud">
+          <div class="decision-header">
+            <div class="decision-header-left">
+              <span class="decision-source-tag tag-cloud">Cloud Agricultural AI</span>
+              <h3 class="decision-title">Cloud Decision</h3>
+            </div>
+            <span class="badge" id="recon-cloud-model-badge">Simulated AI</span>
+          </div>
+
+          <div class="decision-body">
+            <div class="decision-field">
+              <span class="field-label">Assessment</span>
+              <div class="field-value highlight-cloud" id="recon-cloud-assessment">Awaiting cloud review...</div>
+            </div>
+
+            <div class="decision-field">
+              <span class="field-label">Observations Considered</span>
+              <ul id="recon-cloud-evidence" class="evidence-list-small"></ul>
+            </div>
+
+            <div class="decision-field">
+              <span class="field-label">Explanation & Agronomic Depth</span>
+              <p class="reasoning-text" id="recon-cloud-explanation">Explanation...</p>
+            </div>
+
+            <div class="decision-field">
+              <span class="field-label">Limitations & Caveats</span>
+              <p class="limitations-text" id="recon-cloud-limitations">Limitations...</p>
+            </div>
+
+            <div class="decision-footer-meta">
+              <span><strong>Reviewed At:</strong> <span id="recon-cloud-timestamp">-</span></span>
+              <span><strong>Audit:</strong> Validated via Express API</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Preserved Decision Audit Trail -->
+      <div class="audit-trail-card">
+        <div class="audit-header">
+          <h4>📜 Decision Preservation Audit Trail</h4>
+          <span class="badge badge-neutral">Immutable History</span>
+        </div>
+        <p class="audit-desc">
+          SyncSense ensures <strong>zero loss of offline agency</strong>. Even when cloud AI recommends an alternate diagnosis or points out additional factors, the farmer's initial local assessment is retained permanently for field accountability.
+        </p>
+        <div class="audit-details-box" id="recon-audit-details">
+          Audit details will appear here.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Service Worker & Main Application Scripts -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
