@@ -141,6 +141,18 @@ export const TRANSLATIONS = {
     titleAssessment: 'Assessment',
     titleReasoning: 'Full Reasoning / Agronomic Depth',
     titleLimitations: 'Limitations & Caveats',
+    reconAssessmentLabel: 'Assessment',
+    reconMatchedRulesLabel: 'Matched Rules',
+    reconEvidenceLabel: 'Evidence Considered',
+    reconReasoningLabel: 'Full Reasoning',
+    reconCloudReasoningLabel: 'Explanation & Agronomic Depth',
+    reconLimitationsLabel: 'Limitations & Caveats',
+    reconAuditBadge: 'Immutable History',
+    reconVoiceGuide: 'Voice Guide',
+    reconStopVoice: 'Stop Audio',
+    badgePreserved: 'Preserved',
+    btnSavedCase: 'Saved to Local Cases',
+    noRulesMatched: 'No rules triggered (Insufficient evidence)',
     auditTrailTitle: '📜 Decision Preservation Audit Trail',
     auditTrailDesc: 'SyncSense ensures zero loss of offline agency. Even when cloud AI recommends an alternate diagnosis or points out additional factors, the farmer\'s initial local assessment is retained permanently for field accountability.'
   },
@@ -274,6 +286,18 @@ export const TRANSLATIONS = {
     titleAssessment: 'मूल्यांकन',
     titleReasoning: 'विस्तृत कारण व विश्लेषण',
     titleLimitations: 'सीमाएं व सावधानियां',
+    reconAssessmentLabel: 'मूल्यांकन',
+    reconMatchedRulesLabel: 'लागू हुए नियम',
+    reconEvidenceLabel: 'विचार किए गए साक्ष्य',
+    reconReasoningLabel: 'विस्तृत कारण',
+    reconCloudReasoningLabel: 'स्पष्टीकरण एवं वैज्ञानिक गहराई',
+    reconLimitationsLabel: 'सीमाएं व सावधानियां',
+    reconAuditBadge: 'अपरिवर्तनीय इतिहास',
+    reconVoiceGuide: 'आवाज गाइड',
+    reconStopVoice: 'आवाज बंद करें',
+    badgePreserved: 'सुरक्षित',
+    btnSavedCase: 'फोन में सहेजा गया',
+    noRulesMatched: 'कोई नियम लागू नहीं हुआ (अपर्याप्त साक्ष्य)',
     auditTrailTitle: '📜 निर्णय संरक्षण ऑडिट ट्रेल',
     auditTrailDesc: 'सिंकसेंस ऑफ़लाइन स्वायत्तता की सुरक्षा करता है। भले ही क्लाउड AI कोई अलग राय दे, किसान का मूल निर्णय कभी मिटाया नहीं जाता।'
   },
@@ -407,6 +431,18 @@ export const TRANSLATIONS = {
     titleAssessment: 'तपासणी निष्कर्ष',
     titleReasoning: 'सविस्तर कारणे व विश्लेषण',
     titleLimitations: 'मर्यादा व दक्षता',
+    reconAssessmentLabel: 'तपासणी निष्कर्ष',
+    reconMatchedRulesLabel: 'लागू झालेले नियम',
+    reconEvidenceLabel: 'तपासलेली लक्षणे (पुरावे)',
+    reconReasoningLabel: 'सविस्तर कारणे',
+    reconCloudReasoningLabel: 'स्पष्टीकरण व कृषी वैज्ञानिक माहिती',
+    reconLimitationsLabel: 'मर्यादा व दक्षता',
+    reconAuditBadge: 'कायमस्वरूपी नोंद',
+    reconVoiceGuide: 'व्हॉईस गाइड',
+    reconStopVoice: 'आवाज बंद करा',
+    badgePreserved: 'सुरक्षित',
+    btnSavedCase: 'फोनमध्ये जतन केले',
+    noRulesMatched: 'कोणताही नियम लागू झाला नाही (अपुरा पुरावा)',
     auditTrailTitle: '📜 निर्णय संरक्षण इतिहास (ऑडिट ट्रेल)',
     auditTrailDesc: 'सिंकसेन्स शेतकऱ्याच्या स्थानिक अधिकारांचे रक्षण करते. क्लाउड AI ने वेगळा सल्ला दिला तरी मूळ स्थानिक निर्णय नष्ट केला जात नाही.'
   }
@@ -454,61 +490,30 @@ export function t(key) {
 }
 
 /**
- * Translates an assessment text into the target language
+ * Translates an assessment text into the target language (Local & Cloud AI)
  */
 export function translateAssessment(assessmentText = '', lang = currentLang) {
-  if (lang === 'en') return assessmentText;
+  if (lang === 'en' || !assessmentText) return assessmentText;
 
   const text = assessmentText.toLowerCase();
 
-  if (lang === 'hi') {
-    if (text.includes('water stress') && text.includes('nutrient stress')) {
-      return 'मिश्रित लक्षणे: पानी की कमी (सूखा) + पोषक तत्वों की कमी';
-    }
-    if (text.includes('water stress') || text.includes('water deficit') || text.includes('drought')) {
-      return 'संभावित पानी का ताण (सूखा / नमी की कमी)';
-    }
-    if (text.includes('yellow mosaic')) {
-      return 'संभावित पीला मोज़ेक वायरस (YMV) अथवा लौह तत्व की कमी';
-    }
-    if (text.includes('rust') || text.includes('stripe')) {
-      return 'संभावित रतुआ (गेरुआ / रस्ट रोग)';
-    }
-    if (text.includes('blast') || text.includes('blight')) {
-      return 'संभावित झुलसा अथवा पत्ती धब्बा रोग (ब्लास्ट / ब्लाइट)';
-    }
-    if (text.includes('zinc') || text.includes('khaira')) {
-      return 'संभावित जिंक (जस्ता) की कमी अथवा खैरा रोग';
-    }
-    if (text.includes('nutrient') || text.includes('chlorosis')) {
-      return 'संभावित पोषक तत्व की कमी (नाइट्रोजन / क्लोरोसिस)';
-    }
-    if (text.includes('foliar disease') || text.includes('leaf spot') || text.includes('alternaria') || text.includes('cercospora')) {
-      return 'संभावित पर्ण रोग (अल्टरनेरिया / फफूंद जनित पत्ती धब्बा रोग)';
-    }
-    if (text.includes('waterlogging') || text.includes('hypoxia') || text.includes('root rot')) {
-      return 'जलभराव व जड़ों में ऑक्सीजन की कमी (सड़न का खतरा)';
-    }
-    if (text.includes('healthy')) {
-      return 'स्वस्थ फसल - कोई तात्कालिक तनाव नहीं';
-    }
-    if (text.includes('insufficient evidence') || text.includes('indeterminate')) {
-      return 'स्थानीय नियमों हेतु अपर्याप्त साक्ष्य (अनिश्चित)';
-    }
-    return assessmentText;
-  }
-
   if (lang === 'mr') {
+    if (text.includes('confirmed') && (text.includes('water') || text.includes('deficit') || text.includes('drought'))) {
+      return 'निश्चित पाण्याचा ताण (कोरडी माती व दिवसाचे कोमेजणे)';
+    }
     if (text.includes('water stress') && text.includes('nutrient stress')) {
       return 'मिश्र ताण: पाण्याचा ताण (दुष्काळ) + अन्नद्रव्यांची कमतरता';
     }
-    if (text.includes('water stress') || text.includes('water deficit') || text.includes('drought')) {
+    if (text.includes('water stress') || text.includes('water deficit') || text.includes('drought') || text.includes('moisture deficit')) {
       return 'संभाव्य पाण्याचा ताण (दुष्काळ / ओलाव्याची कमतरता)';
     }
     if (text.includes('yellow mosaic')) {
       return 'संभाव्य पिवळा मोझॅक विषाणू (YMV) किंवा लोहाची कमतरता';
     }
-    if (text.includes('rust') || text.includes('stripe')) {
+    if (text.includes('soybean rust')) {
+      return 'संभाव्य सोयाबीन तांबेरा (रस्ट) रोग किंवा पानावरील ठिपके';
+    }
+    if (text.includes('stripe') || text.includes('rust')) {
       return 'संभाव्य तांबेरा रोग (रस्ट / गेरवा)';
     }
     if (text.includes('blast') || text.includes('blight')) {
@@ -517,25 +522,392 @@ export function translateAssessment(assessmentText = '', lang = currentLang) {
     if (text.includes('zinc') || text.includes('khaira')) {
       return 'संभाव्य जस्त (झिंक) ची कमतरता किंवा खैरा रोग';
     }
-    if (text.includes('nutrient') || text.includes('chlorosis')) {
-      return 'संभाव्य अन्नद्रव्यांची कमतरता (नत्र / सूक्ष्म अन्नद्रव्ये)';
+    if (text.includes('nutrient') || text.includes('chlorosis') || text.includes('nitrogen')) {
+      return 'संभाव्य अन्नद्रव्यांची कमतरता (नत्र / सूक्ष्म अन्नद्रव्ये / क्लोरोसिस)';
     }
-    if (text.includes('foliar disease') || text.includes('leaf spot') || text.includes('alternaria') || text.includes('cercospora')) {
+    if (text.includes('foliar disease') || text.includes('foliar pathogen') || text.includes('leaf spot') || text.includes('alternaria') || text.includes('cercospora')) {
       return 'संभाव्य पानांवरील बुरशीजन्य रोग (अल्टरनेरिया / करपा ठिपके)';
     }
-    if (text.includes('waterlogging') || text.includes('hypoxia') || text.includes('root rot')) {
+    if (text.includes('rhizoctonia') || text.includes('collar rot')) {
+      return 'संभाव्य रायझोक्टोनिया / खोडकूज व पानांचा करपा (पाणथळ जमीन)';
+    }
+    if (text.includes('waterlogging') || text.includes('hypoxia') || text.includes('root rot') || text.includes('asphyxiation') || text.includes('stagnation')) {
       return 'पाणी साचल्यामुळे मुळांना हवेची कमतरता (दलदल व सडण)';
     }
     if (text.includes('healthy')) {
-      return 'निरोगी पीक - कोणताही तात्काळ धोका नाही';
+      return 'निरोगी पीक - कोणताही तात्काळ धोका नाही (उत्तम वाढ)';
     }
-    if (text.includes('insufficient evidence') || text.includes('indeterminate')) {
-      return 'स्थानिक नियमांसाठी अपुरा पुरावा (अस्पष्ट)';
+    if (text.includes('insufficient evidence') || text.includes('indeterminate') || text.includes('sub-threshold')) {
+      return 'स्थानिक नियमांसाठी अपुरा पुरावा (अस्पष्ट पाहणी माहिती)';
+    }
+    return assessmentText;
+  }
+
+  if (lang === 'hi') {
+    if (text.includes('confirmed') && (text.includes('water') || text.includes('deficit') || text.includes('drought'))) {
+      return 'पुष्टीकृत पानी का ताण (सूखी मिट्टी व मुरझाने की स्थिति)';
+    }
+    if (text.includes('water stress') && text.includes('nutrient stress')) {
+      return 'मिश्रित लक्षण: पानी की कमी (सूखा) + पोषक तत्वों की कमी';
+    }
+    if (text.includes('water stress') || text.includes('water deficit') || text.includes('drought') || text.includes('moisture deficit')) {
+      return 'संभावित पानी का ताण (सूखा / नमी की कमी)';
+    }
+    if (text.includes('yellow mosaic')) {
+      return 'संभावित पीला मोज़ेक वायरस (YMV) अथवा लौह तत्व की कमी';
+    }
+    if (text.includes('soybean rust')) {
+      return 'संभावित सोयाबीन रतुआ (रस्ट) अथवा पत्ती धब्बा रोग';
+    }
+    if (text.includes('stripe') || text.includes('rust')) {
+      return 'संभावित रतुआ (गेरुआ / रस्ट रोग)';
+    }
+    if (text.includes('blast') || text.includes('blight')) {
+      return 'संभावित झुलसा अथवा पत्ती धब्बा रोग (ब्लास्ट / ब्लाइट)';
+    }
+    if (text.includes('zinc') || text.includes('khaira')) {
+      return 'संभावित जिंक (जस्ता) की कमी अथवा खैरा रोग';
+    }
+    if (text.includes('nutrient') || text.includes('chlorosis') || text.includes('nitrogen')) {
+      return 'संभावित पोषक तत्व की कमी (नाइट्रोजन / क्लोरोसिस)';
+    }
+    if (text.includes('foliar disease') || text.includes('foliar pathogen') || text.includes('leaf spot') || text.includes('alternaria') || text.includes('cercospora')) {
+      return 'संभावित पर्ण रोग (अल्टरनेरिया / फफूंद जनित पत्ती धब्बा रोग)';
+    }
+    if (text.includes('rhizoctonia') || text.includes('collar rot')) {
+      return 'संभावित राइजोक्टोनिया / जड़ सड़न रोग (जलभराव के कारण)';
+    }
+    if (text.includes('waterlogging') || text.includes('hypoxia') || text.includes('root rot') || text.includes('asphyxiation') || text.includes('stagnation')) {
+      return 'जलभराव व जड़ों में ऑक्सीजन की कमी (सड़न का खतरा)';
+    }
+    if (text.includes('healthy')) {
+      return 'स्वस्थ फसल - कोई तात्कालिक तनाव नहीं (सामान्य वृद्धि)';
+    }
+    if (text.includes('insufficient evidence') || text.includes('indeterminate') || text.includes('sub-threshold')) {
+      return 'स्थानीय नियमों हेतु अपर्याप्त साक्ष्य (अनिश्चित आंकड़े)';
     }
     return assessmentText;
   }
 
   return assessmentText;
+}
+
+/**
+ * Translates agronomic explanations and limitations into Hindi or Marathi
+ */
+export function translateExplanation(explanationText = '', lang = currentLang) {
+  if (lang === 'en' || !explanationText) return explanationText;
+  const t = explanationText.toLowerCase();
+
+  if (lang === 'mr') {
+    // Cloud AI Explanations
+    if (t.includes('multi-spectral analysis') || t.includes('superseding moisture deficit') || t.includes('characteristic lesion')) {
+      return 'क्लाउड मॉडेलच्या विश्लेषणात पानांवरील ठिपक्यांची लक्षणे स्पष्टपणे बुरशीजन्य रोगाची (करपा/तांबेरा) असल्याचे दर्शवतात, ज्यामुळे पाण्याचा ताण नसून हा मुख्य रोग असल्याचे स्पष्ट होते.';
+    }
+    if (t.includes('weather cross-referencing') || t.includes('transpiration deficit') || t.includes('severe daytime wilting')) {
+      return 'हवामान माहिती आणि ओलावा निर्देशांकानुसार कोरडी माती व दिवसाची पाने सुकणे यामुळे पिकाला तीव्र पाण्याचा ताण बसत आहे. बाष्पीभवनाचा ताण व अन्नद्रव्ये शोषण्यात अडथळा येत आहे.';
+    }
+    if (t.includes('lack definitive symptom markers') || t.includes('spectral indices require')) {
+      return 'नोंदवलेल्या लक्षणांवरून पिकाच्या स्थितीचा निश्चित निष्कर्ष काढण्यासाठी माहिती अपुरी आहे. अधिक तपासणी आवश्यक आहे.';
+    }
+    if (t.includes('airborne fungal spore') || t.includes('necrotic lesion distribution')) {
+      return 'पानांवरील जळकट ठिपक्यांची रचना हवेतून पसरणाऱ्या बुरशीच्या प्रादुर्भावाचे संकेत देते. दमट हवामानामुळे रोगाचा प्रादुर्भाव वाढू शकतो.';
+    }
+
+    // Cloud Limitations
+    if (t.includes('laboratory spore microscopy') || t.includes('high humidity microclimate')) {
+      return 'प्रयोगशाळा सूक्ष्मदर्शक चाचणीशिवाय संगणकीय अंदाज. हवेतील जास्त आर्द्रतेमुळे रोगाचा प्रसार जलद होऊ शकतो.';
+    }
+    if (t.includes('root compaction and nematode') || t.includes('can mimic water deficit')) {
+      return 'सिम्युलेटेड क्लाउड विश्लेषण. मुळांची समस्या, जमीन घट्ट होणे किंवा सूत्रकृमींमुळेही अशीच लक्षणे दिसू शकतात.';
+    }
+    if (t.includes('incomplete input vectors') || t.includes('minimum required')) {
+      return 'अपूर्ण माहितीवर आधारित पुनरावलोकन. मातीतील ओलावा व पानांचा रंग तपासणे आवश्यक आहे.';
+    }
+    if (t.includes('pathogen isolation test recommended')) {
+      return 'बुरशीनाशक फवारणी करण्यापूर्वी कृषी तज्ज्ञांकडून नमुने तपासून घेणे योग्य ठरेल.';
+    }
+
+    // Local Rule Explanations
+    if (t.includes('multiple adverse stress') || (t.includes('moisture deficit') && t.includes('chlorosis'))) {
+      return 'एकाधिक ताण एकाच वेळी दिसून येत आहेत: कोरडी माती व कोमेजल्यामुळे पाण्याचा तीव्र ताण, तसेच पिवळेपणामुळे अन्नद्रव्यांची कमतरता आढळली आहे.';
+    }
+    if (t.includes('moisture deficit') || t.includes('dry or cracked') || t.includes('drought') || t.includes('wilting')) {
+      return 'मातीत ओलावा कमी असल्यामुळे आणि पाने सुकल्यामुळे पिकाला पाण्याचा तीव्र ताण बसत आहे.';
+    }
+    if (t.includes('yellow mosaic') || t.includes('iron chlorosis') || t.includes('chlorosis') || t.includes('yellowing')) {
+      return 'पाने पिवळी पडल्यामुळे नत्र किंवा सूक्ष्म अन्नद्रव्यांची (लोह/झिंक) कमतरता किंवा पिवळा मोझॅक असू शकतो.';
+    }
+    if (t.includes('rust') || t.includes('pustules') || t.includes('stripe')) {
+      return 'पानांवर तांबूस ठिपके किंवा बुरशीजन्य बीजाणू आढळल्यामुळे तांबेरा रोगाची शक्यता आहे.';
+    }
+    if (t.includes('blast') || t.includes('blight') || t.includes('lesions') || t.includes('leaf spot') || t.includes('alternaria')) {
+      return 'पानांवरील डाग किंवा करपलेली लक्षणे बुरशीजन्य करपा किंवा पानांवरील ठिपके रोगाचे संकेत देतात.';
+    }
+    if (t.includes('waterlogging') || t.includes('stagnant') || t.includes('hypoxia') || t.includes('root rot') || t.includes('standing water')) {
+      return 'जमिनीत अतिरिक्त पाणी साचल्यामुळे मुळांना प्राणवायू (ऑक्सिजन) मिळत नसून सडण्याची शक्यता आहे.';
+    }
+    if (t.includes('healthy') || t.includes('adequate') || t.includes('vigorous')) {
+      return 'पिकाची स्थिती समाधानकारक असून कोणतीही तीव्र रोगाची लक्षणे आढळलेली नाहीत.';
+    }
+    if (t.includes('insufficient') || t.includes('limited') || t.includes('indeterminate')) {
+      return 'नोंदवलेली माहिती कमी असल्यामुळे निश्चित निष्कर्ष काढता येत नाही. अधिक तपासणी आवश्यक आहे.';
+    }
+    return explanationText;
+  }
+
+  if (lang === 'hi') {
+    // Cloud AI Explanations
+    if (t.includes('multi-spectral analysis') || t.includes('superseding moisture deficit') || t.includes('characteristic lesion')) {
+      return 'क्लाउड मॉडल के विश्लेषण अनुसार पत्तियों के धब्बे फफूंद जनित रोग का संकेत देते हैं, जो पानी की कमी से अधिक गंभीर कारक है।';
+    }
+    if (t.includes('weather cross-referencing') || t.includes('transpiration deficit') || t.includes('severe daytime wilting')) {
+      return 'मौसम डेटा और फसल नमी सूचकांक सूखी मिट्टी व मुरझाने को पानी की भारी कमी से जोड़ते हैं। पत्तियों में वाष्पोत्सर्जन तनाव है।';
+    }
+    if (t.includes('lack definitive symptom markers') || t.includes('spectral indices require')) {
+      return 'दर्ज लक्षणों में निश्चित निष्कर्ष के लिए पर्याप्त आंकड़े नहीं हैं। अतिरिक्त जांच आवश्यक है।';
+    }
+    if (t.includes('airborne fungal spore') || t.includes('necrotic lesion distribution')) {
+      return 'पत्तियों पर धब्बों का फैलाव हवा से फैलने वाले फफूंद जनित बीजाणुओं का संकेत देता है। नमीयुक्त वातावरण इसे बढ़ा सकता है।';
+    }
+
+    // Cloud Limitations
+    if (t.includes('laboratory spore microscopy') || t.includes('high humidity microclimate')) {
+      return 'बिना प्रयोगशाला जांच के सिम्युलेटेड मूल्यांकन। अधिक आर्द्रता रोग को बढ़ा सकती है।';
+    }
+    if (t.includes('root compaction and nematode') || t.includes('can mimic water deficit')) {
+      return 'सिम्युलेटेड विश्लेषण। जड़ संपीड़न या नेमाटोड भी पानी की कमी जैसे लक्षण उत्पन्न कर सकते हैं।';
+    }
+    if (t.includes('incomplete input vectors') || t.includes('minimum required')) {
+      return 'अधूरे इनपुट पर आधारित विश्लेषण। मिट्टी की नमी और पत्ती का रंग जांचना आवश्यक है।';
+    }
+    if (t.includes('pathogen isolation test recommended')) {
+      return 'फफूंदनाशक छिड़काव से पहले रोगज़नक़ पहचान परीक्षण की सलाह दी जाती है।';
+    }
+
+    // Local Rule Explanations
+    if (t.includes('multiple adverse stress') || (t.includes('moisture deficit') && t.includes('chlorosis'))) {
+      return 'एक साथ कई तनाव लक्षण दिखाई दे रहे हैं: सूखी मिट्टी व मुरझाने से पानी की कमी, साथ ही पीलापन होने से पोषक तत्वों का अभाव है।';
+    }
+    if (t.includes('moisture deficit') || t.includes('dry or cracked') || t.includes('drought') || t.includes('wilting')) {
+      return 'मिट्टी में नमी की भारी कमी और पत्तियों के मुरझाने से फसल में पानी का गंभीर तनाव है।';
+    }
+    if (t.includes('yellow mosaic') || t.includes('iron chlorosis') || t.includes('chlorosis') || t.includes('yellowing')) {
+      return 'पत्तियों के पीलेपन से नाइट्रोजन अथवा सूक्ष्म पोषक तत्वों (लौह/जिंक) की कमी या पीला मोज़ेक हो सकता है।';
+    }
+    if (t.includes('rust') || t.includes('pustules') || t.includes('stripe')) {
+      return 'पत्तियों पर लाल-भूरे धब्बे या फफूंद के लक्षण रतुआ (रस्ट) रोग का संकेत देते हैं।';
+    }
+    if (t.includes('blast') || t.includes('blight') || t.includes('lesions') || t.includes('leaf spot') || t.includes('alternaria')) {
+      return 'पत्तियों पर धब्बे और झुलसा रोग के लक्षण फफूंद जनित ब्लास्ट अथवा पत्ती धब्बा रोग की ओर संकेत करते हैं।';
+    }
+    if (t.includes('waterlogging') || t.includes('stagnant') || t.includes('hypoxia') || t.includes('root rot') || t.includes('standing water')) {
+      return 'खेत में पानी जमा होने से जड़ों को ऑक्सीजन नहीं मिल रही और सड़न का खतरा है।';
+    }
+    if (t.includes('healthy') || t.includes('adequate') || t.includes('vigorous')) {
+      return 'फसल की सामान्य स्थिति अच्छी है और कोई गंभीर तनाव नहीं देखा गया।';
+    }
+    if (t.includes('insufficient') || t.includes('limited') || t.includes('indeterminate')) {
+      return 'उपलब्ध आंकड़े अपर्याप्त होने के कारण सटीक निर्णय के लिए अतिरिक्त अवलोकन की आवश्यकता है।';
+    }
+    return explanationText;
+  }
+
+  return explanationText;
+}
+
+/**
+ * Translates actionable agronomic recommendations into Marathi or Hindi
+ */
+export function translateRecommendation(recText = '', lang = currentLang) {
+  if (lang === 'en' || !recText) return recText;
+  const t = recText.toLowerCase();
+
+  if (lang === 'mr') {
+    const adviceList = [];
+    if (t.includes('irrigation') || t.includes('soil moisture') || t.includes('water') || t.includes('drought') || t.includes('moisture')) {
+      adviceList.push('मुळांच्या भागात २०-३० सेंमी खोलीवर मातीतील ओलावा तपासा; शक्य असल्यास हलके पाणी द्या किंवा आच्छादन करा.');
+    }
+    if (t.includes('fertilizer') || t.includes('chlorosis') || t.includes('urea') || t.includes('nitrogen') || t.includes('zinc')) {
+      adviceList.push('खतांचे नियोजन तपासा; शिफारशीनुसार सूक्ष्म अन्नद्रव्ये किंवा युरियाची योग्य मात्रा द्या.');
+    }
+    if (t.includes('drainage') || t.includes('drain') || t.includes('waterlogging')) {
+      adviceList.push('तातडीने शेतातील साचलेले पाणी बाहेर काढण्यासाठी पाट/चर काढा.');
+    }
+    if (t.includes('isolate') || t.includes('spots') || t.includes('specimens') || t.includes('blight') || t.includes('rust') || t.includes('fungal') || t.includes('whitefly')) {
+      adviceList.push('बाधित पानांचे नमुने तपासा; बुरशीचा प्रसार रोखण्यासाठी कृषी तज्ज्ञांचा सल्ला घेऊन शिफारशीत बुरशीनाशक फवारणी करा.');
+    }
+    if (t.includes('scouting') || t.includes('monitoring') || t.includes('regular')) {
+      adviceList.push('किडी व रोगांच्या प्रादुर्भावासाठी नियमित शेताची पाहणी चालू ठेवा.');
+    }
+    if (t.includes('re-examine') || t.includes('collect clearer') || t.includes('insufficient')) {
+      adviceList.push('शेताची पुन्हा बारकाईने पाहणी करा व अधिक स्पष्ट लक्षणे नोंदवून पुन्हा तपासा.');
+    }
+    if (adviceList.length > 0) return adviceList.join(' ');
+    return 'शेतातील ओलावा व पानांची स्थिती तपासून योग्य कृषी सल्लागाराचे मार्गदर्शन घ्यावे.';
+  }
+
+  if (lang === 'hi') {
+    const adviceList = [];
+    if (t.includes('irrigation') || t.includes('soil moisture') || t.includes('water') || t.includes('drought') || t.includes('moisture')) {
+      adviceList.push('जड़ क्षेत्र में 20-30 सेमी गहराई पर नमी जांचें; संभव हो तो हल्का पानी दें या मल्चिंग करें।');
+    }
+    if (t.includes('fertilizer') || t.includes('chlorosis') || t.includes('urea') || t.includes('nitrogen') || t.includes('zinc')) {
+      adviceList.push('उर्वरक प्रबंधन की जांच करें; आवश्यकतानुसार यूरिया या सूक्ष्म पोषक तत्वों का छिड़काव करें।');
+    }
+    if (t.includes('drainage') || t.includes('drain') || t.includes('waterlogging')) {
+      adviceList.push('खेत से जमा पानी निकालने के लिए तुरंत जलनिकासी नालियां बनाएं।');
+    }
+    if (t.includes('isolate') || t.includes('spots') || t.includes('specimens') || t.includes('blight') || t.includes('rust') || t.includes('fungal') || t.includes('whitefly')) {
+      adviceList.push('प्रभावित पत्तियों की जांच करें; विशेषज्ञ सलाह अनुसार अनुशंसित फफूंदनाशक का प्रयोग करें।');
+    }
+    if (t.includes('scouting') || t.includes('monitoring') || t.includes('regular')) {
+      adviceList.push('कीट-रोग की रोकथाम हेतु नियमित रूप से खेत का निरीक्षण जारी रखें।');
+    }
+    if (t.includes('re-examine') || t.includes('collect clearer') || t.includes('insufficient')) {
+      adviceList.push('खेत का दोबारा मुआयना करें और अधिक स्पष्ट लक्षणों के साथ पुनः जांचें।');
+    }
+    if (adviceList.length > 0) return adviceList.join(' ');
+    return 'खेत की नमी और पत्तियों की स्थिति देखकर स्थानीय कृषि विशेषज्ञ से सलाह लें।';
+  }
+
+  return recText;
+}
+
+/**
+ * Translates evidence items into Marathi or Hindi
+ */
+export function translateEvidence(evidenceItem = '', lang = currentLang) {
+  if (lang === 'en' || !evidenceItem) return evidenceItem;
+  const t = evidenceItem.toLowerCase();
+
+  if (lang === 'mr') {
+    if (t.includes('soil') && t.includes('dry')) return 'मातीची स्थिती: कोरडी / ओलावा कमी';
+    if (t.includes('soil') && t.includes('cracked')) return 'मातीची स्थिती: भेगा पडलेली / दुष्काळ';
+    if (t.includes('soil') && t.includes('moist')) return 'मातीची स्थिती: पुरेशा ओलाव्याची';
+    if (t.includes('soil') && t.includes('wet')) return 'मातीची स्थिती: ओली / पाणथळ';
+    if (t.includes('soil') && (t.includes('waterlogged') || t.includes('saturated'))) return 'मातीची स्थिती: पाणी साचलेली / दलदल';
+    if ((t.includes('foliage') || t.includes('plant') || t.includes('tillers') || t.includes('canopy')) && (t.includes('wilting') || t.includes('drooping'))) return 'झाडाची पाने कोमेजलेली / मान टाकलेली';
+    if (t.includes('plant') && t.includes('healthy')) return 'झाडाची स्थिती निरोगी व ताठ';
+    if (t.includes('stunted')) return 'पिकाची खुरटलेली वाढ';
+    if (t.includes('leaf color') && (t.includes('yellow') || t.includes('chlorosis'))) return 'पानांचा रंग पिवळसर / फिकट पडलेला';
+    if (t.includes('leaf color') && t.includes('green')) return 'पानांचा रंग नैसर्गिक हिरवा';
+    if (t.includes('spot') && (t.includes('brown') || t.includes('circular'))) return 'पानांवर गोलाकार तपकिरी ठिपके';
+    if (t.includes('spot') && t.includes('water_soaked')) return 'पानांवर काळपट जळकट डाग';
+    if (t.includes('spot') && (t.includes('no') || t.includes('none'))) return 'पानांवर कोणतेही ठिपके नाहीत';
+    if (t.includes('optimal') || t.includes('lush green')) return 'योग्य ओलावा, निरोगी हिरवी पाने, कोणताही रोग नाही';
+    if (t.includes('hypoxic stress')) return 'अतिरिक्त पाण्यामुळे मुळांना हवेचा तुटवडा';
+    return evidenceItem;
+  }
+
+  if (lang === 'hi') {
+    if (t.includes('soil') && t.includes('dry')) return 'मिट्टी की स्थिति: सूखी / नमी की कमी';
+    if (t.includes('soil') && t.includes('cracked')) return 'मिट्टी की स्थिति: दरारें युक्त / सूखा';
+    if (t.includes('soil') && t.includes('moist')) return 'मिट्टी की स्थिति: पर्याप्त नमी युक्त';
+    if (t.includes('soil') && t.includes('wet')) return 'मिट्टी की स्थिति: अत्यधिक गीली';
+    if (t.includes('soil') && (t.includes('waterlogged') || t.includes('saturated'))) return 'मिट्टी की स्थिति: जलभराव युक्त';
+    if ((t.includes('foliage') || t.includes('plant') || t.includes('tillers') || t.includes('canopy')) && (t.includes('wilting') || t.includes('drooping'))) return 'पौधे की पत्तियां मुरझाई हुई';
+    if (t.includes('plant') && t.includes('healthy')) return 'पौधे की स्थिति स्वस्थ व सीधी';
+    if (t.includes('stunted')) return 'पौधे का रुका हुआ विकास';
+    if (t.includes('leaf color') && (t.includes('yellow') || t.includes('chlorosis'))) return 'पत्तियों का रंग पीला / फीका';
+    if (t.includes('leaf color') && t.includes('green')) return 'पत्तियों का रंग सामान्य हरा';
+    if (t.includes('spot') && (t.includes('brown') || t.includes('circular'))) return 'पत्तियों पर भूरे गोल धब्बे';
+    if (t.includes('spot') && t.includes('water_soaked')) return 'पत्तियों पर गहरे गीले धब्बे';
+    if (t.includes('spot') && (t.includes('no') || t.includes('none'))) return 'पत्तियों पर कोई धब्बे नहीं';
+    if (t.includes('optimal') || t.includes('lush green')) return 'पर्याप्त नमी, स्वस्थ हरी पत्तियां, कोई रोग नहीं';
+    if (t.includes('hypoxic stress')) return 'अत्यधिक नमी से जड़ों में ऑक्सीजन की कमी';
+    return evidenceItem;
+  }
+
+  return evidenceItem;
+}
+
+/**
+ * Translates rule names into Marathi or Hindi
+ */
+export function translateRuleName(ruleName = '', lang = currentLang) {
+  if (lang === 'en' || !ruleName) return ruleName;
+  const t = ruleName.toLowerCase();
+
+  if (lang === 'mr') {
+    if (t.includes('water deficit') || t.includes('drought') || t.includes('water stress') || t.includes('moisture deficit')) return 'पाण्याचा ताण / ओलावा कमतरता नियम';
+    if (t.includes('chlorosis') || t.includes('nutrient') || t.includes('nitrogen')) return 'पोषकद्रव्य कमतरता / पिवळेपणा नियम';
+    if (t.includes('pathogen') || t.includes('leaf spot')) return 'पानावरील बुरशी / करपा नियम';
+    if (t.includes('rust')) return 'तांबेरा रोग नियम';
+    if (t.includes('hypoxia') || t.includes('waterlogging') || t.includes('rhizoctonia')) return 'पाणी साचणे / दलदल नियम';
+    if (t.includes('mosaic')) return 'पिवळा मोझॅक विषाणू नियम';
+    if (t.includes('blast') || t.includes('blight')) return 'ब्लास्ट / करपा रोग नियम';
+    if (t.includes('optimal') || t.includes('healthy')) return 'निरोगी पीक वाढ नियम';
+    return ruleName;
+  }
+
+  if (lang === 'hi') {
+    if (t.includes('water deficit') || t.includes('drought') || t.includes('water stress') || t.includes('moisture deficit')) return 'पानी की कमी / सूखा तनाव नियम';
+    if (t.includes('chlorosis') || t.includes('nutrient') || t.includes('nitrogen')) return 'पोषक तत्व अभाव / पीलापन नियम';
+    if (t.includes('pathogen') || t.includes('leaf spot')) return 'पत्ती धब्बा / फफूंद नियम';
+    if (t.includes('rust')) return 'रतुआ (रस्ट) रोग नियम';
+    if (t.includes('hypoxia') || t.includes('waterlogging') || t.includes('rhizoctonia')) return 'जलभराव / ऑक्सीजन कमी नियम';
+    if (t.includes('mosaic')) return 'पीला मोज़ेक वायरस नियम';
+    if (t.includes('blast') || t.includes('blight')) return 'ब्लास्ट / झुलसा रोग नियम';
+    if (t.includes('optimal') || t.includes('healthy')) return 'स्वस्थ फसल वृद्धि नियम';
+    return ruleName;
+  }
+
+  return ruleName;
+}
+
+/**
+ * Translates reconciliation summaries into Marathi or Hindi
+ */
+export function translateSummary(summaryText = '', lang = currentLang) {
+  if (lang === 'en' || !summaryText) return summaryText;
+  const t = summaryText.toLowerCase();
+
+  if (lang === 'mr') {
+    if (t.includes('fully consistent') || (t.includes('local and cloud') && t.includes('consistent'))) {
+      return 'स्थानिक नियम आणि क्लाउड AI यांचे निष्कर्ष पूर्णपणे जुळणारे व सुसंगत आहेत.';
+    }
+    if (t.includes('contrasting') || t.includes('conflict') || t.includes('discrepancy')) {
+      return 'स्थानिक नियम आणि क्लाउड AI यांच्या निष्कर्षात मतभेद आढळला आहे. शेतकऱ्याचा स्थानिक निर्णय सुरक्षित ठेवण्यात आला आहे.';
+    }
+    if (t.includes('additional diagnostic depth') || t.includes('confirmed local assessment')) {
+      return 'क्लाउड AI ने स्थानिक निष्कर्षाची पुष्टी केली असून अतिरिक्त सखोल कृषी मार्गदर्शन पुरवले आहे.';
+    }
+    if (t.includes('diagnostic insights for an unclassified') || t.includes('unclassified')) {
+      return 'स्थानिक नियमांत स्पष्ट न झालेल्या लक्षणांसाठी क्लाउड AI ने उपयुक्त कृषी मार्गदर्शन दिले आहे.';
+    }
+    if (t.includes('uncertain or limited') || t.includes('neither engine')) {
+      return 'स्थानिक नियम आणि क्लाउड AI दोन्हीकडे माहिती मर्यादित असल्याने अंतिम निष्कर्षासाठी शेतात फेरतपासणी आवश्यक आहे.';
+    }
+    if (t.includes('further agronomic inspection') || t.includes('partial overlap')) {
+      return 'स्थानिक आणि क्लाउड निष्कर्षांमध्ये अंशतः समानता असून तज्ज्ञांचे मार्गदर्शन शिफारशीत आहे.';
+    }
+    return summaryText;
+  }
+
+  if (lang === 'hi') {
+    if (t.includes('fully consistent') || (t.includes('local and cloud') && t.includes('consistent'))) {
+      return 'स्थानीय नियम और क्लाउड AI के निष्कर्ष पूरी तरह सुसंगत व एक समान हैं।';
+    }
+    if (t.includes('contrasting') || t.includes('conflict') || t.includes('discrepancy')) {
+      return 'स्थानीय नियम और क्लाउड AI के बीच मतभेद दर्ज किया गया है। स्थानीय निर्णय सुरक्षित है।';
+    }
+    if (t.includes('additional diagnostic depth') || t.includes('confirmed local assessment')) {
+      return 'क्लाउड AI ने स्थानीय निष्कर्ष की पुष्टि की और अतिरिक्त वैज्ञानिक विश्लेषण प्रदान किया।';
+    }
+    if (t.includes('diagnostic insights for an unclassified') || t.includes('unclassified')) {
+      return 'अस्पष्ट स्थानीय अवलोकन के लिए क्लाउड AI ने नैदानिक अंतर्दृष्टि प्रदान की।';
+    }
+    if (t.includes('uncertain or limited') || t.includes('neither engine')) {
+      return 'स्थानीय नियम और क्लाउड AI दोनों के पास सीमित डेटा होने से अतिरिक्त निरीक्षण आवश्यक है।';
+    }
+    if (t.includes('further agronomic inspection') || t.includes('partial overlap')) {
+      return 'आंशिक समानता है और अंतिम निर्णय हेतु कृषि विशेषज्ञ की पुष्टि अनुशंसित है।';
+    }
+    return summaryText;
+  }
+
+  return summaryText;
 }
 
 /**

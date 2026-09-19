@@ -23,6 +23,11 @@ import {
   setLanguage, 
   t, 
   translateAssessment, 
+  translateExplanation,
+  translateRecommendation,
+  translateEvidence,
+  translateRuleName,
+  translateSummary,
   speakText, 
   stopSpeaking, 
   isSpeaking 
@@ -311,6 +316,8 @@ function applyLanguageToDOM(lang = getCurrentLanguage()) {
   if (reconSub) reconSub.textContent = t('reconSubtitle');
   const reconBack = document.getElementById('btn-recon-back-cases');
   if (reconBack) reconBack.textContent = t('btnBackCases');
+  const reconTTS = document.getElementById('recon-tts-label');
+  if (reconTTS && !isSpeaking()) reconTTS.textContent = t('reconVoiceGuide');
 
   const cardTitles = document.querySelectorAll('.decision-title');
   if (cardTitles.length >= 2) {
@@ -324,8 +331,27 @@ function applyLanguageToDOM(lang = getCurrentLanguage()) {
     cardTags[1].textContent = t('tagCloudAI');
   }
 
+  const badgesPreserved = document.querySelectorAll('.badge-preserved');
+  badgesPreserved.forEach(b => {
+    b.textContent = t('badgePreserved');
+  });
+
+  const fieldLabels = document.querySelectorAll('#screen-reconciliation .field-label');
+  if (fieldLabels.length >= 7) {
+    fieldLabels[0].textContent = t('reconAssessmentLabel');
+    fieldLabels[1].textContent = t('reconMatchedRulesLabel');
+    fieldLabels[2].textContent = t('reconEvidenceLabel');
+    fieldLabels[3].textContent = t('reconReasoningLabel');
+    fieldLabels[4].textContent = t('reconAssessmentLabel');
+    fieldLabels[5].textContent = t('reconEvidenceLabel');
+    fieldLabels[6].textContent = t('reconCloudReasoningLabel');
+    if (fieldLabels[7]) fieldLabels[7].textContent = t('reconLimitationsLabel');
+  }
+
   const auditH4 = document.querySelector('.audit-header h4');
   if (auditH4) auditH4.textContent = t('auditTrailTitle');
+  const auditBadge = document.querySelector('.audit-header .badge');
+  if (auditBadge) auditBadge.textContent = t('reconAuditBadge');
   const auditDesc = document.querySelector('.audit-desc');
   if (auditDesc) auditDesc.textContent = t('auditTrailDesc');
 
@@ -360,7 +386,7 @@ function initTTSHandlers() {
     if (lang === 'hi') {
       textToRead = `सिंकसेंस स्थानीय मूल्यांकन: ${heading}। कारण: ${explanation}। खेत कार्य सलाह: ${recommendation}। सुरक्षा सूचना: ${safety}।`;
     } else if (lang === 'mr') {
-      textToRead = `सिंकसेन्स स्थानिक तपासणी: ${heading}। कारणे: ${explanation}। शेतातील कृती सल्ला: ${recommendation}। सुरक्षा सूचना: ${safety}।`;
+      textToRead = `सिंकसेन्स स्थानिक निष्कर्ष: ${heading}। कारणे: ${explanation}। शेतातील कृती सल्ला: ${recommendation}। सुरक्षा सूचना: ${safety}।`;
     } else {
       textToRead = `SyncSense Local Assessment: ${heading}. Reasoning: ${explanation}. Suggested Action: ${recommendation}. Safety notice: ${safety}.`;
     }
@@ -385,7 +411,7 @@ function initTTSHandlers() {
     if (isSpeaking()) {
       stopSpeaking();
       btnReconTTS.classList.remove('tts-playing');
-      if (reconTTSLabel) reconTTSLabel.textContent = 'Voice Guide';
+      if (reconTTSLabel) reconTTSLabel.textContent = t('reconVoiceGuide');
       if (reconTTSIcon) reconTTSIcon.textContent = '🔊';
       return;
     }
@@ -406,12 +432,12 @@ function initTTSHandlers() {
     }
 
     btnReconTTS.classList.add('tts-playing');
-    if (reconTTSLabel) reconTTSLabel.textContent = 'Stop Audio';
+    if (reconTTSLabel) reconTTSLabel.textContent = t('reconStopVoice');
     if (reconTTSIcon) reconTTSIcon.textContent = '⏹️';
 
     speakText(textToRead, lang, () => {
       btnReconTTS.classList.remove('tts-playing');
-      if (reconTTSLabel) reconTTSLabel.textContent = 'Voice Guide';
+      if (reconTTSLabel) reconTTSLabel.textContent = t('reconVoiceGuide');
       if (reconTTSIcon) reconTTSIcon.textContent = '🔊';
     });
   });
@@ -707,7 +733,7 @@ function initFormHandlers() {
 
       // Reset button
       btnSave.disabled = false;
-      btnSave.innerHTML = `<span class="btn-icon">💾</span> Saved to Local Cases`;
+      btnSave.innerHTML = `<span class="btn-icon">💾</span> ${t('btnSavedCase')}`;
 
       // Prompt user or offer direct navigation to Cases
       setTimeout(() => {
@@ -729,7 +755,7 @@ function initFormHandlers() {
       console.error('[App] Failed to save case:', err);
       showToast('Error saving case to local storage: ' + err.message, 'error');
       btnSave.disabled = false;
-      btnSave.innerHTML = `<span class="btn-icon">💾</span> Save to Local Cases`;
+      btnSave.innerHTML = `<span class="btn-icon">💾</span> ${t('btnSaveCase')}`;
     }
   });
 }
@@ -742,8 +768,8 @@ function displayLocalAssessment(observations, evaluation) {
   document.getElementById('res-rule-version').textContent = evaluation.ruleVersion;
   document.getElementById('res-footer-version').textContent = evaluation.ruleVersion;
   document.getElementById('res-assessment-text').textContent = translateAssessment(evaluation.assessment, lang);
-  document.getElementById('res-explanation-text').textContent = evaluation.explanation;
-  document.getElementById('res-recommendation-text').textContent = evaluation.recommendation;
+  document.getElementById('res-explanation-text').textContent = translateExplanation(evaluation.explanation, lang);
+  document.getElementById('res-recommendation-text').textContent = translateRecommendation(evaluation.recommendation, lang);
   document.getElementById('res-disclaimer-text').textContent = t('safetyNoticeText');
   document.getElementById('res-timestamp').textContent = new Date().toLocaleTimeString();
 
@@ -758,12 +784,13 @@ function displayLocalAssessment(observations, evaluation) {
   const rulesContainer = document.getElementById('res-matched-rules');
   rulesContainer.innerHTML = '';
   if (evaluation.matchedRuleIds.length === 0) {
-    rulesContainer.innerHTML = '<span class="badge badge-neutral">No rules triggered (Insufficient evidence)</span>';
+    rulesContainer.innerHTML = `<span class="badge badge-neutral">${t('noRulesMatched')}</span>`;
   } else {
     evaluation.matchedRuleIds.forEach((id, idx) => {
       const tag = document.createElement('span');
       tag.className = 'rule-tag';
-      tag.textContent = `${id}: ${evaluation.matchedRuleNames[idx] || ''}`;
+      const translatedName = translateRuleName(evaluation.matchedRuleNames[idx] || '', lang);
+      tag.textContent = `${id}: ${translatedName}`;
       rulesContainer.appendChild(tag);
     });
   }
@@ -773,7 +800,7 @@ function displayLocalAssessment(observations, evaluation) {
   evidenceList.innerHTML = '';
   evaluation.evidence.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = item;
+    li.textContent = translateEvidence(item, lang);
     evidenceList.appendChild(li);
   });
 
@@ -922,11 +949,13 @@ async function openReconciliationView(caseId) {
     return;
   }
 
+  const currentLang = getCurrentLanguage();
+
   document.getElementById('recon-case-id-badge').textContent = caseId;
 
   // Local Decision Card
-  document.getElementById('recon-local-assessment').textContent = localDecision?.assessment || 'No assessment';
-  document.getElementById('recon-local-explanation').textContent = localDecision?.explanation || 'No explanation recorded.';
+  document.getElementById('recon-local-assessment').textContent = translateAssessment(localDecision?.assessment || 'No assessment', currentLang);
+  document.getElementById('recon-local-explanation').textContent = translateExplanation(localDecision?.explanation || 'No explanation recorded.', currentLang);
   document.getElementById('recon-local-version').textContent = `v${localDecision?.ruleVersion || '1.0.0'}`;
   document.getElementById('recon-local-timestamp').textContent = localDecision ? new Date(localDecision.createdAt).toLocaleString() : '-';
 
@@ -937,11 +966,12 @@ async function openReconciliationView(caseId) {
     localDecision.matchedRuleIds.forEach((id, i) => {
       const tag = document.createElement('span');
       tag.className = 'rule-tag';
-      tag.textContent = `${id} ${localDecision.matchedRuleNames?.[i] || ''}`;
+      const ruleName = translateRuleName(localDecision.matchedRuleNames?.[i] || '', currentLang);
+      tag.textContent = `${id} ${ruleName}`;
       localRulesContainer.appendChild(tag);
     });
   } else {
-    localRulesContainer.innerHTML = '<span class="badge badge-neutral">No local rules matched</span>';
+    localRulesContainer.innerHTML = `<span class="badge badge-neutral">${t('noRulesMatched')}</span>`;
   }
 
   // Local Evidence
@@ -949,7 +979,7 @@ async function openReconciliationView(caseId) {
   localEvidenceList.innerHTML = '';
   (localDecision?.evidence || []).forEach(ev => {
     const li = document.createElement('li');
-    li.textContent = ev;
+    li.textContent = translateEvidence(ev, currentLang);
     localEvidenceList.appendChild(li);
   });
 
@@ -962,12 +992,12 @@ async function openReconciliationView(caseId) {
   const cloudModelBadge = document.getElementById('recon-cloud-model-badge');
 
   if (cloudDecision) {
-    document.getElementById('recon-cloud-assessment').textContent = cloudDecision.assessment;
-    document.getElementById('recon-cloud-explanation').textContent = cloudDecision.explanation;
-    document.getElementById('recon-cloud-limitations').textContent = cloudDecision.limitations || 'No specific limitations noted.';
+    document.getElementById('recon-cloud-assessment').textContent = translateAssessment(cloudDecision.assessment, currentLang);
+    document.getElementById('recon-cloud-explanation').textContent = translateExplanation(cloudDecision.explanation, currentLang);
+    document.getElementById('recon-cloud-limitations').textContent = translateExplanation(cloudDecision.limitations || 'No specific limitations noted.', currentLang);
     document.getElementById('recon-cloud-timestamp').textContent = new Date(cloudDecision.reviewedAt).toLocaleString();
 
-    cloudModelBadge.textContent = cloudDecision.isSimulated ? 'Simulated AI' : (cloudDecision.modelName || 'Live Cloud AI');
+    cloudModelBadge.textContent = cloudDecision.isSimulated ? (currentLang === 'mr' ? 'सिम्युलेटेड AI' : (currentLang === 'hi' ? 'सिम्युलेटेड AI' : 'Simulated AI')) : (cloudDecision.modelName || 'Live Cloud AI');
     cloudModelBadge.className = cloudDecision.isSimulated ? 'badge badge-pending' : 'badge badge-synced';
 
     // Cloud observations considered
@@ -975,7 +1005,7 @@ async function openReconciliationView(caseId) {
     cloudEvidenceList.innerHTML = '';
     (cloudDecision.observationsConsidered || []).forEach(ev => {
       const li = document.createElement('li');
-      li.textContent = ev;
+      li.textContent = translateEvidence(ev, currentLang);
       cloudEvidenceList.appendChild(li);
     });
 
@@ -987,43 +1017,43 @@ async function openReconciliationView(caseId) {
       banner.classList.add('banner-match');
       bannerIcon.textContent = '✅';
       bannerTitle.textContent = t('statusMatch');
-      bannerDesc.textContent = syncRecord?.reconciliationSummary || 'Local and cloud assessments are fully consistent.';
+      bannerDesc.textContent = translateSummary(syncRecord?.reconciliationSummary || 'Local and cloud assessments are fully consistent.', currentLang);
       conflictAlert.classList.add('hidden');
     } else if (reconStatus === RECONCILIATION_STATUS.ADDITIONAL_INSIGHT) {
       banner.classList.add('banner-insight');
       bannerIcon.textContent = '💡';
       bannerTitle.textContent = t('statusInsight');
-      bannerDesc.textContent = syncRecord?.reconciliationSummary || 'Cloud AI added diagnostic context without conflicting with local decision.';
+      bannerDesc.textContent = translateSummary(syncRecord?.reconciliationSummary || 'Cloud AI added diagnostic context without conflicting with local decision.', currentLang);
       conflictAlert.classList.add('hidden');
     } else if (reconStatus === RECONCILIATION_STATUS.CONFLICT) {
       banner.classList.add('banner-conflict');
       bannerIcon.textContent = '⚠️';
       bannerTitle.textContent = t('statusConflict');
-      bannerDesc.textContent = syncRecord?.reconciliationSummary || 'Substantial discrepancy identified between local and cloud diagnoses.';
+      bannerDesc.textContent = translateSummary(syncRecord?.reconciliationSummary || 'Substantial discrepancy identified between local and cloud diagnoses.', currentLang);
       conflictAlert.innerHTML = `<strong>${t('conflictNoticeTitle')}</strong> ${t('conflictNoticeText')}`;
       conflictAlert.classList.remove('hidden');
     } else {
       banner.classList.add('banner-review');
       bannerIcon.textContent = '🔍';
       bannerTitle.textContent = t('statusRequiresReview');
-      bannerDesc.textContent = syncRecord?.reconciliationSummary || 'Further agronomic inspection recommended.';
+      bannerDesc.textContent = translateSummary(syncRecord?.reconciliationSummary || 'Further agronomic inspection recommended.', currentLang);
       conflictAlert.classList.add('hidden');
     }
   } else {
     // Cloud Decision Pending
-    document.getElementById('recon-cloud-assessment').textContent = 'Pending Cloud Synchronization';
-    document.getElementById('recon-cloud-explanation').textContent = 'This case was generated offline and is queued for cloud review upon network reconnection.';
-    document.getElementById('recon-cloud-limitations').textContent = 'Awaiting cloud review.';
-    document.getElementById('recon-cloud-timestamp').textContent = 'Pending';
-    cloudModelBadge.textContent = 'Awaiting Sync';
+    document.getElementById('recon-cloud-assessment').textContent = t('statusPendingSync');
+    document.getElementById('recon-cloud-explanation').textContent = currentLang === 'mr' ? 'हे प्रकरण क्लाउड AI ला पाठवण्यासाठी सिंक करणे बाकी आहे.' : (currentLang === 'hi' ? 'यह मामला क्लाउड AI सिंक की प्रतीक्षा में है।' : 'This case is currently stored offline. Connect to internet and sync to receive cloud agronomic analysis.');
+    document.getElementById('recon-cloud-limitations').textContent = currentLang === 'mr' ? 'सिंक झाल्यावर माहिती उपलब्ध होईल.' : (currentLang === 'hi' ? 'सिंक होने के बाद जानकारी उपलब्ध होगी।' : 'Pending sync.');
+    document.getElementById('recon-cloud-timestamp').textContent = currentLang === 'mr' ? 'प्रतीक्षेत' : (currentLang === 'hi' ? 'प्रतीक्षारत' : 'Pending');
+    cloudModelBadge.textContent = t('badgePendingSync');
     cloudModelBadge.className = 'badge badge-pending';
 
-    document.getElementById('recon-cloud-evidence').innerHTML = '<li>Observations stored locally in IndexedDB</li>';
+    document.getElementById('recon-cloud-evidence').innerHTML = `<li>${currentLang === 'mr' ? 'निरीक्षणे स्थानिकरित्या IndexedDB मध्ये सुरक्षित आहेत' : (currentLang === 'hi' ? 'अवलोकन स्थानीय रूप से IndexedDB में सुरक्षित हैं' : 'Observations stored locally in IndexedDB')}</li>`;
 
     banner.className = 'recon-status-banner banner-review';
     bannerIcon.textContent = '⏳';
-    bannerTitle.textContent = 'Pending Cloud Synchronization';
-    bannerDesc.textContent = 'The local decision is safely preserved. Connect to internet and click "Sync Now" to trigger cloud AI review and reconciliation.';
+    bannerTitle.textContent = t('statusPendingSync');
+    bannerDesc.textContent = currentLang === 'mr' ? 'स्थानिक निर्णय सुरक्षित आहे. क्लाउड AI विश्लेषणासाठी फोन इंटरनेटशी जोडून सिंक करा.' : (currentLang === 'hi' ? 'स्थानीय निर्णय सुरक्षित है। क्लाउड AI विश्लेषण के लिए नेटवर्क में आकर सिंक करें।' : 'The local decision is safely preserved. Connect to internet and click "Sync Now" to trigger cloud AI review and reconciliation.');
     conflictAlert.classList.add('hidden');
   }
 
