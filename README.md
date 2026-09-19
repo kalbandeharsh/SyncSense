@@ -13,7 +13,7 @@ Farmers in rural India often experience unreliable, intermittent, or absent inte
 1. **Runs 100% offline** on local devices using a deterministic JavaScript rule engine.
 2. **Generates immediate preliminary evaluations** for cotton crop conditions.
 3. **Persists cases locally** using browser IndexedDB and Service Worker caching.
-4. **Synchronizes intelligence** when internet connectivity returns.
+4. **Syncs upon reconnection**.
 5. **Reconciles local heuristics with cloud AI reasoning**.
 6. **Detects and flags conflicting diagnoses** without blindly overwriting the farmer's initial local decision.
 
