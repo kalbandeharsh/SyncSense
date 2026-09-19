@@ -71,33 +71,14 @@ syncsense-ai/
 
 ## 4. Multi-Crop Local Rule Engine
 
-SyncSense AI includes crop-specific diagnostic rules for 5 major agricultural crops in India:
-- **🌱 Cotton (कपास / कापूस):** Water deficit stress, foliar chlorosis, Alternaria fungal leaf spot, hypoxia.
-- **🌿 Soybean (सोयाबीन):** Pod-fill moisture stress, Yellow Mosaic Virus (YMV) / iron chlorosis, Soybean Rust, Rhizoctonia rot.
-- **🌾 Wheat (गेहूं / गहू):** Crown Root Initiation (CRI) water deficit, nitrogen deficiency, Stripe (Yellow) Rust, waterlogging.
-- **🌾 Rice / Paddy (धान / भात):** Drought / aerobic stress, Zinc deficiency (Khaira disease), Rice Blast / Bacterial Leaf Blight (BLB).
-- **🌽 Maize / Corn (मक्का / मका):** Tasseling moisture deficit, V-shaped nitrogen chlorosis, Turcicum Leaf Blight, stagnation hypoxia.
+Deterministic, client-side diagnostic models tailored for 5 major Indian crops:
+- **🌱 Cotton:** Water deficit stress, nutrient chlorosis, and Alternaria fungal leaf spot.
+- **🌿 Soybean:** Critical pod-fill drought, Yellow Mosaic Virus, and Soybean Rust.
+- **🌾 Wheat:** CRI stage moisture deficit, nitrogen chlorosis, and Stripe (Yellow) Rust.
+- **🌾 Rice / Paddy:** Aerobic moisture stress, Zinc deficiency (Khaira), and Rice Blast / BLB.
+- **🌽 Maize:** Tasseling drought stress, V-pattern nitrogen deficiency, and Turcicum blight.
 
-| Crop | Rule ID | Diagnostic Trigger | Preliminary Heuristic Output |
-|---|---|---|---|
-| **Cotton** | `COT-01` | Dry soil + wilting | Possible Water Stress (Drought / Moisture Deficit) |
-| **Cotton** | `COT-02` | Yellow / pale leaves | Possible Nutrient Deficiency or Stress Chlorosis |
-| **Cotton** | `COT-03` | Lesions / circular spots | Possible Foliar Disease (Alternaria / Cercospora Leaf Spot) |
-| **Soybean** | `SOY-01` | Dry soil + wilting | Possible Drought Stress during Critical Pod-fill Stage |
-| **Soybean** | `SOY-02` | Yellow leaves | Possible Yellow Mosaic Virus (YMV) or Iron Chlorosis |
-| **Soybean** | `SOY-03` | Foliar spots | Possible Soybean Rust or Cercospora Leaf Spot |
-| **Wheat** | `WHT-01` | Dry soil + drooping | Critical Stage Moisture Deficit (CRI / Tillering Stage) |
-| **Wheat** | `WHT-02` | Yellow lower leaves | Possible Nitrogen Deficiency Chlorosis |
-| **Wheat** | `WHT-03` | Foliar lesions / pustules | Suspected Stripe (Yellow) Rust or Spot Blotch |
-| **Rice** | `RIC-01` | Cracked paddy soil + wilting | Possible Severe Drought Stress in Paddy |
-| **Rice** | `RIC-02` | Yellow / bronzing leaves | Possible Zinc Deficiency (Khaira) or Nitrogen Chlorosis |
-| **Rice** | `RIC-03` | Water-soaked / spindle lesions | Suspected Rice Blast or Bacterial Leaf Blight (BLB) |
-| **Maize** | `MAZ-01` | Dry soil + leaf rolling | Moisture Deficit at Critical Vegetative/Tasseling Stage |
-| **Maize** | `MAZ-02` | V-shaped yellowing | Nitrogen Deficiency (Classic V-pattern Chlorosis) |
-| **Maize** | `MAZ-03` | Elliptical spots | Suspected Turcicum Leaf Blight or Maydis Leaf Blight |
-
-> **Safety Disclaimer:**  
-> *"This is a preliminary rule-based assessment. Consult a qualified agricultural expert before taking action."*
+> **Safety Notice:** Preliminary rule-based heuristics only. All local decisions are preserved with an immutable audit trail.
 
 ---
 
