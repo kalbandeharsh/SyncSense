@@ -1,6 +1,7 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "outputDirectory": ".",
   "rewrites": [
     { "source": "/health", "destination": "/api/index.js" },
     { "source": "/sync", "destination": "/api/index.js" },
