@@ -27,6 +27,16 @@ const serverCases = new Map();
 app.use(cors());
 app.use(express.json());
 
+// Normalize URL if rewritten by Vercel to /api or /api/*
+app.use((req, res, next) => {
+  if (req.url.startsWith('/api/')) {
+    req.url = req.url.replace('/api', '');
+  } else if (req.url === '/api') {
+    req.url = '/';
+  }
+  next();
+});
+
 // Log incoming requests
 app.use((req, res, next) => {
   if (!req.path.startsWith('/health')) {
@@ -49,7 +59,7 @@ app.use(express.static(ROOT_DIR, {
  * GET /health
  * Lightweight ping endpoint for sync manager connectivity validation
  */
-app.get('/health', (req, res) => {
+app.get(['/health', '/api/health'], (req, res) => {
   res.status(200).json({
     status: 'ok',
     timestamp: new Date().toISOString(),
@@ -63,7 +73,7 @@ app.get('/health', (req, res) => {
  * POST /sync
  * Ingests offline cases with duplicate prevention and returns Cloud AI review
  */
-app.post('/sync', async (req, res) => {
+app.post(['/sync', '/api/sync'], async (req, res) => {
   try {
     const { caseId, crop, observations, localDecision, createdAt } = req.body;
 
@@ -126,9 +136,9 @@ app.post('/sync', async (req, res) => {
 
 /**
  * POST /review
- * On-demand review endpoint
+ * Standalone direct review endpoint without persistence
  */
-app.post('/review', async (req, res) => {
+app.post(['/review', '/api/review'], async (req, res) => {
   try {
     const cloudDecision = await evaluateWithCloudAI(req.body);
     return res.status(200).json({
@@ -147,7 +157,7 @@ app.post('/review', async (req, res) => {
  * GET /cases
  * Lists all synchronized server-side cases
  */
-app.get('/cases', (req, res) => {
+app.get(['/cases', '/api/cases'], (req, res) => {
   const casesArray = Array.from(serverCases.values());
   res.status(200).json({
     count: casesArray.length,
@@ -159,7 +169,7 @@ app.get('/cases', (req, res) => {
  * GET /cases/:id
  * Retrieves specific server-side case
  */
-app.get('/cases/:id', (req, res) => {
+app.get(['/cases/:id', '/api/cases/:id'], (req, res) => {
   const item = serverCases.get(req.params.id);
   if (!item) {
     return res.status(404).json({ error: 'Case not found on server' });

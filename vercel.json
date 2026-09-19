@@ -3,10 +3,11 @@
   "cleanUrls": true,
   "outputDirectory": ".",
   "rewrites": [
-    { "source": "/health", "destination": "/api/index.js" },
-    { "source": "/sync", "destination": "/api/index.js" },
-    { "source": "/cases", "destination": "/api/index.js" },
-    { "source": "/cases/:id*", "destination": "/api/index.js" },
-    { "source": "/review", "destination": "/api/index.js" }
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/health", "destination": "/api" },
+    { "source": "/sync", "destination": "/api" },
+    { "source": "/cases", "destination": "/api" },
+    { "source": "/cases/:id*", "destination": "/api" },
+    { "source": "/review", "destination": "/api" }
   ]
 }
